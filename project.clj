@@ -1,4 +1,4 @@
-(defproject xtreak/clj-http-ssrf "0.1.0"
+(defproject xtreak/clj-http-ssrf "0.1.1-SNAPSHOT"
   :description "A clj-http middleware to prevent SSRF attacks"
   :url "http://github.com/tirkarthi/clj-http-ssrf"
   :license {:name "The MIT License"
