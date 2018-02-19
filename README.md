@@ -16,7 +16,7 @@ clj-http enables building custom middlewares so that we can effectively block th
 
 ## Usage
 
-```
+```clojure
 foo.core> (require [clj-http-ssrf :refer :all])
 foo.core> (client/with-middleware (conj client/default-middleware (wrap-validators :hosts ["10.0.0.0/1"]))
                       (client/get "http://10.0.10.11/secret/private/endpoint/"))
