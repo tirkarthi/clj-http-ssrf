@@ -1,4 +1,4 @@
-# clj-http-ssrf [![Build Status](https://travis-ci.org/tirkarthi/clj-http-ssrf.svg?branch=master)](https://travis-ci.org/tirkarthi/clj-http-ssrf)
+# clj-http-ssrf [![Build Status](https://travis-ci.org/tirkarthi/clj-http-ssrf.svg?branch=master)](https://travis-ci.org/tirkarthi/clj-http-ssrf) [![Clojars Project](https://img.shields.io/clojars/v/xtreak/clj-http-ssrf.svg)](https://clojars.org/xtreak/clj-http-ssrf)
 
 A clj-http middleware designed to prevent SSRF attacks
 
