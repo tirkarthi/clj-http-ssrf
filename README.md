@@ -26,6 +26,40 @@ foo.core> (client/with-middleware (conj client/default-middleware (wrap-validato
 {:status 404, :headers {}, :body ""}
 ```
 
+If you'd prefer to work with predicates,
+
+```clojure
+(ns foo.core
+  (:require [clj-http.client :as client]
+            [clj-http-ssrf.reserved :as reserved]))
+
+(defn safe-scheme?
+  [scheme]
+  (#{:http :https} scheme))
+
+(defn safe-url?
+  [url]
+  (not (some #(re-find % url) [#"private" #"secret"])))
+
+(defn safe-host?
+  [ip-address]
+  (not (some #(inet.data.ip/network-contains? % ip-address)
+             (reserved/reserved-ip-ranges [:private]))))
+
+(defn safe-port?
+  [port]
+  (#{80 443} port))
+
+(client/with-middleware
+  (conj client/default-middleware
+        (wrap-predicates
+         :scheme-pred safe-scheme?
+         :url-pred safe-url?
+         :host-pred safe-host?
+         :port-pred safe-port?))
+  (client/get "https://ifconfig.co"))
+```
+
 ## Thanks
 
 * https://github.com/JordanMilne/Advocate for the python library. This is a port of the same.
