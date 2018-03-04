@@ -4,7 +4,7 @@ A clj-http middleware designed to prevent SSRF attacks
 
 ## Leiningen
 
-`[xtreak/clj-http-ssrf "0.1.1"]`
+`[xtreak/clj-http-ssrf "0.2.0"]`
 
 ## Rationale
 
