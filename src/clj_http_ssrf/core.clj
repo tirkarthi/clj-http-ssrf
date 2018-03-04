@@ -49,12 +49,12 @@
       :or {status 403 headers {} body ""}}]
   (fn [client]
     (fn [req]
-      (let [url (:url req)
-            parsed-url (client/parse-url url)
-            scheme (:scheme parsed-url)
-            port (:server-port parsed-url)
+      (let [url         (:url req)
+            parsed-url  (client/parse-url url)
+            scheme      (:scheme parsed-url)
+            port        (:server-port parsed-url)
             server-name (:server-name parsed-url)
-            host (.getHostAddress (InetAddress/getByName server-name))]
+            host        (.getHostAddress (InetAddress/getByName server-name))]
         (cond
           (and scheme-pred (not (scheme-pred scheme)))
           (make-response status headers body)
