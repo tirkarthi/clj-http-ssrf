@@ -17,11 +17,11 @@
   (fn [client] successful-results))
 
 (defn get-with-middleware
-  [middleware url]
+  [middleware url & [get-args]]
   (client/with-middleware
     ;; Use success-middleware for testing purposes
     [success-middleware middleware]
-    (client/get url)))
+    (client/get url get-args)))
 
 (deftest regex-test
   (testing "Test against regex URLs"
@@ -143,3 +143,31 @@
                                                  :body "Not found"
                                                  :port-pred safe-port?)
                                 "http://localhost:9000")))))
+
+(deftest get-host-address-test
+  (testing "get-host-address to make sure it respects :ignore-unknown-host"
+    (is (thrown-with-msg?
+         java.net.UnknownHostException
+         #"example.invalid: nodename nor servname provided, or not known"
+         (get-with-middleware (wrap-validators :status 404 :regexes [#"google"])
+                              "http://example.invalid")))
+    (is (= successful-results
+           (get-with-middleware (wrap-validators :status 404 :regexes [#"google"])
+                                "http://example.invalid"
+                                {:ignore-unknown-host true})))
+    ;; This test fails sometimes? Not sure why
+    (is (thrown-with-msg?
+         java.net.UnknownHostException
+         #"example.invalid"
+         (get-with-middleware (wrap-predicates :status 404
+                                               :headers {"Server" "nginx"}
+                                               :body "Not found"
+                                               :port-pred safe-port?)
+                              "http://example.invalid")))
+    (is (= successful-results
+           (get-with-middleware (wrap-predicates :status 404
+                                                 :headers {"Server" "nginx"}
+                                                 :body "Not found"
+                                                 :port-pred safe-port?)
+                                "http://example.invalid"
+                                {:ignore-unknown-host true})))))
