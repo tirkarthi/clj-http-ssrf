@@ -3,13 +3,13 @@
             [clj-http.util :refer [opt]]
             [inet.data.ip :as ip]
             [clojure.stacktrace :refer [root-cause]])
-  (:import (java.net InetAddress UnknownHostException)))
+  (:import [java.net InetAddress UnknownHostException]))
 
 (defn- make-response
   [status headers body]
-  {:status status
+  {:status  status
    :headers headers
-   :body body})
+   :body    body})
 
 (defn- get-host-address
   ;; Passing in parsed-url since it was already computed
@@ -26,10 +26,10 @@
   [req]
   (let [url        (:url req)
         parsed-url (client/parse-url url)]
-    {:url url
+    {:url    url
      :scheme (:scheme parsed-url)
-     :port (:server-port parsed-url)
-     :host (get-host-address req parsed-url)}))
+     :port   (:server-port parsed-url)
+     :host   (get-host-address req parsed-url)}))
 
 (defn wrap-validators
   "
