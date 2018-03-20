@@ -4,7 +4,7 @@ A clj-http middleware designed to prevent SSRF attacks
 
 ## Leiningen
 
-`[xtreak/clj-http-ssrf "0.2.0"]`
+`[xtreak/clj-http-ssrf "0.2.1"]`
 
 ## Rationale
 
@@ -27,6 +27,8 @@ foo.core> (client/with-middleware (conj client/default-middleware (wrap-validato
 ```
 
 If you'd prefer to work with predicates,
+
+- Add `:ignore-unknown-host` as true to ignore unknown hosts instead of raising exceptions.
 
 ```clojure
 (ns foo.core
@@ -58,7 +60,7 @@ If you'd prefer to work with predicates,
          :url-pred safe-url?
          :host-pred safe-host?
          :port-pred safe-port?))
-  (client/get "https://ifconfig.co"))
+  (client/get "https://ifconfig.co" {:ignore-unknown-host true}))
 ```
 
 ## Thanks
