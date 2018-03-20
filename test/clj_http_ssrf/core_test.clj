@@ -3,7 +3,8 @@
             [clj-http.client :as client]
             [clj-http-ssrf.core :refer :all]
             [clj-http-ssrf.reserved :as r]
-            [inet.data.ip :as ip]))
+            [inet.data.ip :as ip])
+  (:import [java.net UnknownHostException]))
 
 (def successful-results
   {:status 999 :headers {"Successful" "true"} :body "Success"})
@@ -17,11 +18,11 @@
   (fn [client] successful-results))
 
 (defn get-with-middleware
-  [middleware url]
+  [middleware url & [get-args]]
   (client/with-middleware
     ;; Use success-middleware for testing purposes
     [success-middleware middleware]
-    (client/get url)))
+    (client/get url get-args)))
 
 (deftest regex-test
   (testing "Test against regex URLs"
@@ -143,3 +144,30 @@
                                                  :body "Not found"
                                                  :port-pred safe-port?)
                                 "http://localhost:9000")))))
+
+(deftest get-host-address-test
+  (testing "get-host-address to make sure it respects :ignore-unknown-host"
+    (is (thrown-with-msg?
+         UnknownHostException
+         #"example.invalid"
+         (get-with-middleware (wrap-validators :status 404 :regexes [#"google"])
+                              "http://example.invalid")))
+    (is (= successful-results
+           (get-with-middleware (wrap-validators :status 404 :regexes [#"google"])
+                                "http://example.invalid"
+                                {:ignore-unknown-host true})))
+    (is (thrown-with-msg?
+         UnknownHostException
+         #"example.invalid"
+         (get-with-middleware (wrap-predicates :status 404
+                                               :headers {"Server" "nginx"}
+                                               :body "Not found"
+                                               :port-pred safe-port?)
+                              "http://example.invalid")))
+    (is (= successful-results
+           (get-with-middleware (wrap-predicates :status 404
+                                                 :headers {"Server" "nginx"}
+                                                 :body "Not found"
+                                                 :port-pred safe-port?)
+                                "http://example.invalid"
+                                {:ignore-unknown-host true})))))
