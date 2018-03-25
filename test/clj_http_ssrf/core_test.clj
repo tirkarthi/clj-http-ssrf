@@ -153,7 +153,9 @@
          (get-with-middleware (wrap-validators :status 404 :regexes [#"google"])
                               "http://example.invalid")))
     (is (= successful-results
-           (get-with-middleware (wrap-validators :status 404 :regexes [#"google"])
+           (get-with-middleware (wrap-validators :status 404
+                                                 :regexes [#"google"]
+                                                 :hosts [#"example"])
                                 "http://example.invalid"
                                 {:ignore-unknown-host true})))
     (is (thrown-with-msg?
@@ -168,6 +170,7 @@
            (get-with-middleware (wrap-predicates :status 404
                                                  :headers {"Server" "nginx"}
                                                  :body "Not found"
-                                                 :port-pred safe-port?)
+                                                 :port-pred safe-port?
+                                                 :host-pred safe-host?)
                                 "http://example.invalid"
                                 {:ignore-unknown-host true})))))
