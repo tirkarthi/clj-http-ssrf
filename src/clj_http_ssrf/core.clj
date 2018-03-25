@@ -39,14 +39,11 @@
   (fn [client]
     (fn [req]
       (let [{:keys [url host port]} (parse-url req)]
-        (cond
-          (and regexes (some #(re-find %1 url) regexes))
+        (if (or (and regexes (some #(re-find %1 url) regexes))
+                (and ports (some #{port} ports))
+                (and hosts host (some #(ip/network-contains? %1 host) hosts)))
           (make-response status headers body)
-          (and ports (some #{port} ports))
-          (make-response status headers body)
-          (and hosts (some #(ip/network-contains? %1 host) hosts))
-          (make-response status headers body)
-          :else (client req))))))
+          (client req))))))
 
 (defn wrap-predicates
   "Accepts a predicate each for requested scheme, url, port and host.
@@ -65,15 +62,13 @@
   (fn [client]
     (fn [req]
       (let [{:keys [scheme url host port]} (parse-url req)]
-        (cond
-          (and scheme-pred (not (scheme-pred scheme)))
+        (if (or (and scheme-pred (not (scheme-pred scheme)))
+                (and url-pred (not (url-pred url)))
+                ;; Because host can be nil if UnknownHostException is thrown above
+                ;;   in get-host-address
+                (and host-pred host (not (host-pred host)))
+                ;; Because if the port is not specified in the url, like "http://www.google.com",
+                ;;   port is parsed as nil
+                (and port-pred port (not (port-pred port))))
           (make-response status headers body)
-          (and url-pred (not (url-pred url)))
-          (make-response status headers body)
-          (and host-pred (not (host-pred host)))
-          (make-response status headers body)
-          ;; Because if the port is not specified in the url, like "http://www.google.com",
-          ;;   port is parsed as nil
-          (and port-pred port (not (port-pred port)))
-          (make-response status headers body)
-          :else (client req))))))
+          (client req))))))
