@@ -17,9 +17,8 @@
   (let [server-name (:server-name parsed-url)]
     (try
       (.getHostAddress (InetAddress/getByName server-name))
-      (catch Exception e
-        (if (or (not= (type (root-cause e)) UnknownHostException)
-                (not (opt req :ignore-unknown-host)))
+      (catch UnknownHostException e
+        (if-not (opt req :ignore-unknown-host)
           (throw (root-cause e)))))))
 
 (defn- parse-url
