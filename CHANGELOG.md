@@ -1,5 +1,9 @@
 # Change Log
 
+### 0.2.2
+
+- Fix logic in case of :ignore-unknown-host. Thanks @ackerleytng .
+
 ### 0.2.1
 
 - Add `:ignore-unknown-host` to ignore or raise exception for unknown hosts. Thanks to @ackerleytng .
